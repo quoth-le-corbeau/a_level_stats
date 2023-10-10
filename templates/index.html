@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container p-5 mt-4 border border-dark bg-secondary-subtle">
+    <h1>A level Statistics Calculator</h1>
+    <p>Choose your operation:</p>
+    <div class="d-flex flex-column w-50 border border-info">
+        <a class="btn btn-outline-info m-1" href="{{ url_for('mean') }}">
+            Measures of Central Tendency
+        </a>
+        <a class="btn btn-outline-info m-1" href="{{ url_for('spread') }}">
+            Measures of Spread
+        </a>
+        <a class="btn btn-outline-info m-1" href="{{ url_for('binomial') }}">
+            Binomial Distribution
+        </a>
+        <a class="btn btn-outline-info m-1" href="{{ url_for('normal') }}">
+            Normal Distribution
+        </a>
+    </div>
+</div>
+{% endblock %}
