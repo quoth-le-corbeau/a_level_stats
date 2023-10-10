@@ -1,5 +1,3 @@
-from typing import List
-
 from flask import Flask, render_template, request
 
 import processor
@@ -28,10 +26,20 @@ def mean_form():
     data = request.form.get("data", "")
     if data == "":
         return render_template(
-            "error.html", 
-            error="Make sure to enter data separated by commas e.g 1.1, 2.2, 3"
+            "error.html",
+            data=data,
+            error="Make sure to enter data separated by commas e.g 1.1, 2.2, 3",
         )
-    data_list = list(map(lambda x: float(x), data.split(",")))
+    try:
+        data_list = list(map(lambda x: float(x), data.split(",")))
+    except ValueError:
+        return render_template(
+            "error.html",
+            data=data,
+            error="Please only enter numbers using '.' for decimal point. "
+            "It could be an unwanted character or maybe "
+            "you used ',' as a decimal marker?",
+        )
     measures = processor.get_central_tendency(data_list=data_list, dp=dp)
     return render_template("mean-form.html", measures=measures, data=data_list)
 
