@@ -1,1 +1,10 @@
 venv
+.idea
+__pycache__
+.idea/
+.mypy_cache/
+.pytest_cache/
+test/__pycache__/
+.mypy_cache
+.pytest_cache
+test/__pycache__
