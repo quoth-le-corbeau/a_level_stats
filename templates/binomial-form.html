@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container p-5 mt-4 border border-dark">
+    <h5>{{ distribution }} with X ~ ({{ trials + "," + probability }}):</h5>
+    <h6>P(X = {{ successes }}) = result</h6>
+</div>
+{% endblock %}

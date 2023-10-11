@@ -2,9 +2,35 @@
 {% block content %}
 <div class="container p-5 mt-4 border border-dark">
     <h1>A level Statistics Calculator</h1>
-    <h2>Binomial Distribution</h2>
-    <p>Choose your operation:</p>
-
+    <h2>Binomial Distributions</h2>
+     <form class="row g-3" action="/binomial-form" method="POST">
+       <select class="form-select" aria-label="Default select example" name="accuracy">
+            <option selected>Accuracy (decimal places)</option>
+            <option value="2dp">2dp</option>
+            <option value="3dp">3dp</option>
+            <option value="4dp">4dp</option>
+            <option value="5dp">5dp</option>
+            <option value="6dp">6dp</option>
+        </select>
+         <select class="form-select" aria-label="Default select example" name="accuracy">
+            <option selected value="bcd">Binomial Cumulative Distribution (bcd)</option>
+            <option value="bpd">Binomial Probability Distribution</option>
+        </select>
+        <div class="input-group mb-3">
+          <span class="input-group-text">n</span>
+          <input type="text" class="form-control"  name="trials">
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">p</span>
+          <input type="text" class="form-control" name="probability">
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">x</span>
+          <input type="text" class="form-control" name="successes">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark mb-3">Submit</button>
+        </div>
+    </form>
 </div>
-
 {% endblock %}
