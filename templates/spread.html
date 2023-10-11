@@ -3,8 +3,24 @@
 <div class="container p-5 mt-4 border border-dark">
     <h1>A level Statistics Calculator</h1>
     <h2>Measures of Spread</h2>
-    <p>Choose your operation:</p>
-
+     <form class="row g-3" action="/spread-form" method="POST">
+       <select class="form-select" aria-label="Default select example" name="accuracy">
+            <option selected>Accuracy (decimal places)</option>
+            <option value="2dp">2dp</option>
+            <option value="3dp">3dp</option>
+            <option value="4dp">4dp</option>
+            <option value="5dp">5dp</option>
+            <option value="6dp">6dp</option>
+        </select>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">
+                Data
+            </label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="1" name="data" placeholder="Paste data here separated by comma e.g 2, 5, 3.6, 9.9, ..."></textarea>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark mb-3">Submit</button>
+        </div>
+    </form>
 </div>
-
 {% endblock %}

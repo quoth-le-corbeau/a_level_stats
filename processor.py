@@ -1,7 +1,8 @@
+import numpy as np
 import math
 from typing import List
 
-from models import CentralTendency
+from models import CentralTendency, Spread
 
 
 def get_central_tendency(data_list: List[float], dp: int = 2) -> CentralTendency:
@@ -25,3 +26,12 @@ def get_central_tendency(data_list: List[float], dp: int = 2) -> CentralTendency
             point = num
     mode = round(number=point, ndigits=dp)
     return CentralTendency(mean=mean, median=median, mode=mode, range=rng)
+
+
+def get_spread(data_list: List[float], dp: int = 2) -> Spread:
+    sorted_data = sorted(data_list)
+    sum_n: float = sum(sorted_data)
+    n: int = len(sorted_data)
+    mean = round(number=sum_n / n, ndigits=dp)
+    np.std(data_list)
+    return Spread(mean=mean, sd=3)

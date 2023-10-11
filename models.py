@@ -7,3 +7,9 @@ class CentralTendency:
     median: float
     mode: float
     range: float
+
+
+@dataclass(frozen=True)
+class Spread:
+    mean: float
+    sd: float

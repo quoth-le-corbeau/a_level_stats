@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container p-5 mt-4 border border-dark">
+    <p>Data: {{ data }}</p>
+    <p>Mean: {{ measures.mean }}</p>
+    <p>Standard Deviation: {{ measures.sd }}</p>
+</div>
+{% endblock %}
