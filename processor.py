@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from typing import List
+from typing import List, Tuple
 
 from models import CentralTendency, Spread
 
@@ -35,3 +35,56 @@ def get_spread(data_list: List[float], dp: int = 2) -> Spread:
     mean = round(number=sum_n / n, ndigits=dp)
     np.std(data_list)
     return Spread(mean=mean, sd=3)
+
+
+def get_bcd(n: int, p: float, x: int, dp: int) -> Tuple[List[str], float]:
+    r: int = 0
+    cumulative_probability: float = 0.0
+    cumulative_array: List[float] = []
+    rows: List[str] = []
+    p_x: float = 0.0
+    while r <= n:
+        n_choose_r = math.factorial(n) / (math.factorial(n - r) * math.factorial(r))
+        success = p**r
+        failure = (1 - p) ** (n - r)
+        probability = n_choose_r * success * failure
+        cumulative_probability += probability
+        cumulative_array.append(round(probability, dp))
+        if r == x:
+            row = f"==> P(X <= {r}) = {round(cumulative_probability, dp)} <=="
+        else:
+            row = f"P(X <= {r}) = {round(cumulative_probability, dp)}"
+        rows.append(row)
+        r += 1
+    i = 0
+    while i <= x:
+        i += 1
+        p_x += cumulative_array[i - 1]
+    return rows, round(p_x, dp)
+
+
+def get_bpd(n: int, p: float, x: int, dp: int) -> Tuple[List[str], float]:
+    r: int = 0
+    # cumulative_probability: float = 0.0
+    # cumulative_array: List[float] = []
+    rows: List[str] = []
+    p_x: float = 0.0
+    while r <= n:
+        n_choose_r = math.factorial(n) / (math.factorial(n - r) * math.factorial(r))
+        success = p**r
+        failure = (1 - p) ** (n - r)
+        probability = n_choose_r * success * failure
+        # cumulative_probability += probability
+        # cumulative_array.append(round(probability, dp))
+        if r == x:
+            row = f"==> P(X = {r}) = {round(probability, dp)} <=="
+            p_x = round(probability, dp)
+        else:
+            row = f"P(X = {r}) = {round(probability, dp)}"
+        rows.append(row)
+        r += 1
+    # i = 0
+    # while i <= x:
+    #     i += 1
+    #     p_x += cumulative_array[i - 1]
+    return rows, p_x

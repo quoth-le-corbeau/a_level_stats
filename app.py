@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Union
 
 import processor
 
@@ -21,9 +21,14 @@ def mean():
 def mean_form():
     data_list, dp, error = _discreet_data_from_form()
     if error is not None:
-        return render_template("error.html", data=error[0], error=error[1])
+        return render_template("mean-error.html", data=error[0], error=error[1])
     measures = processor.get_central_tendency(data_list=data_list, dp=dp)
-    return render_template("mean-form.html", measures=measures, data=data_list)
+    return render_template(
+        "mean-form.html",
+        measures=measures,
+        data=data_list,
+        sorted_data=sorted(data_list),
+    )
 
 
 def _discreet_data_from_form() -> Tuple[List[float], int, Optional[Tuple[str, str]]]:
@@ -59,7 +64,7 @@ def spread():
 def spread_form():
     data_list, dp, error = _discreet_data_from_form()
     if error is not None:
-        return render_template("error.html", data=error[0], error=error[1])
+        return render_template("spread-error.html", data=error[0], error=error[1])
     measures = processor.get_spread(data_list=data_list, dp=dp)
     return render_template("spread-form.html", measures=measures, data=data_list)
 
@@ -71,19 +76,103 @@ def binomial():
 
 @app.route("/binomial-form", methods=["POST"])
 def binomial_form():
-    # accuracy = request.form.get("accuracy", "2dp")
+    (
+        accuracy,
+        distribution,
+        probability,
+        successes,
+        trials,
+        error,
+    ) = _validate_binomial_form_data()
+    if error is not None:
+        return render_template("binomial-error.html", error=error)
+    try:
+        if "bcd" in distribution:
+            rows, p_x = processor.get_bcd(
+                n=trials, p=probability, x=successes, dp=accuracy
+            )
+        elif "bpd" in distribution:
+            rows, p_x = processor.get_bpd(
+                n=trials, p=probability, x=successes, dp=accuracy
+            )
+        else:
+            return render_template("binomial-error.html", error="Unexpected Error!!")
+        return render_template(
+            "binomial-form.html",
+            accuracy=accuracy,
+            distribution=distribution,
+            trials=str(trials),
+            probability=str(probability),
+            successes=str(successes),
+            rows=rows,
+            p_x_is_x=p_x,
+        )
+    except ValueError:
+        error = (
+            f"Invalid values for n, p or x. "
+            f"You entered n = {trials}, p = {probability}, x = {successes}"
+        )
+        return render_template("binomial-error.html", error=error)
 
-    distribution = request.form.get("distribution", "bcd")
+
+def _get_binomial_form_submission() -> Tuple[int, str, str, str, str]:
+    accuracy = request.form.get("accuracy", "4dp")
+    try:
+        accuracy = int(accuracy[0])
+    except ValueError:
+        accuracy = 4
+    distribution = request.form.get("distribution", "")
+    if distribution not in ["bpd", "bcd"]:
+        distribution = "bpd"
     trials = request.form.get("trials", "")
     probability = request.form.get("probability", "")
     successes = request.form.get("successes", "")
-    return render_template(
-        "binomial-form.html",
-        distribution=distribution,
-        trials=trials,
-        probability=probability,
-        successes=successes,
-    )
+    return accuracy, distribution, probability, successes, trials
+
+
+def _validate_binomial_form_data() -> (
+    Union[Tuple[int, str, float, int, int, Optional[str]], Tuple[None, str]]
+):
+    (
+        accuracy,
+        distribution,
+        probability,
+        successes,
+        trials,
+    ) = _get_binomial_form_submission()
+    error = None
+    if any(x == "" for x in [trials, probability, successes]):
+        if trials == "":
+            trials = "(empty)"
+        if probability == "":
+            probability = "(empty)"
+        if successes == "":
+            successes = "(empty)"
+        error = (
+            f"Invalid values for n, p or x. "
+            f"You entered n = {trials}, p = {probability}, x = {successes}"
+        )
+        return None, error
+    try:
+        if float(probability) < 0 or float(probability) > 1:
+            error = (
+                f"You entered p = {float(probability)}!! "
+                f"Probability must be between 0 and 1 :-)"
+            )
+        return (
+            accuracy,
+            distribution,
+            float(probability),
+            int(successes),
+            int(trials),
+            error,
+        )
+    except ValueError:
+        error = (
+            f"Invalid values for n, p or x. "
+            f"You entered n = {trials}, p = {probability}, x = {successes}"
+        )
+        return None, error
 
 
 @app.route("/normal")

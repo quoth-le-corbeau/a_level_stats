@@ -1,12 +1,13 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass(frozen=True)
 class CentralTendency:
     mean: float
     median: float
-    mode: float
     range: float
+    mode: Optional[float]
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container p-5 mt-4 border border-danger bg-danger-subtle">
+    <h2 class="text-danger">Oh no!</h2>
+    <p>Make sure you submit numeric values for n, p and x.</p>
+    <p><b>{{ error }}</b></p>
+    <div>
+        <a href="{{ url_for('binomial')}}" class="btn btn-outline-dark">Try Again</a>
+    </div>
+</div>
+{% endblock %}

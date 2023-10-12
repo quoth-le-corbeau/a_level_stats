@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container p-5 mt-4 border border-dark">
-    <p>Data: {{ data }}</p>
-    <p>Mean: {{ measures.mean }}</p>
-    <p>Median: {{ measures.median }}</p>
-    <p>Mode: {{ measures.mode }}</p>
-    <p>Range: {{ measures.range }}</p>
+    <h5>Your Data: {{ data }}</h5>
+    <h5>Sorted: {{ sorted_data }}</h5>
+    <h6>Mean: {{ measures.mean }}</h6>
+    <h6>Median: {{ measures.median }}</h6>
+    <h6>Range: {{ measures.range }}</h6>
+    {% if measures.mode is not None %}
+        <h6>Mode: {{ measures.mode }}</h6>
+    {% else %}
+        <h6>Mode: This data has no mode</h6>
 </div>
 {% endblock %}
