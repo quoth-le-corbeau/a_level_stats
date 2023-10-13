@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from typing import Tuple, List, Optional, Union
-
+from result import Result, Ok, Err
 import processor
 
 app = Flask(__name__)
@@ -35,12 +35,7 @@ def mean_form():
 def _discreet_data_from_form() -> Tuple[List[float], int, Optional[Tuple[str, str]]]:
     error = None
     data_list = []
-    accuracy = request.form.get("accuracy", "2dp")
-    if "dp" in accuracy:
-        dp = int(accuracy[0])
-    else:
-        # TODO: handle sig figs
-        dp = 6
+    dp = _get_or_set_dp()
     data = request.form.get("data", "")
     if data == "":
         error = (data, "Make sure to enter data separated by commas e.g 1.1, 2.2, 3")
@@ -123,18 +118,23 @@ def binomial_form():
 
 
 def _get_binomial_form_submission() -> Tuple[int, str, str, str, str]:
-    accuracy = request.form.get("accuracy", "4dp")
-    try:
-        accuracy = int(accuracy[0])
-    except ValueError:
-        accuracy = 4
+    dp = _get_or_set_dp()
     distribution = request.form.get("distribution", "")
     if distribution not in ["bpd", "bcd"]:
         distribution = "bpd"
     trials = request.form.get("trials", "")
     probability = request.form.get("probability", "")
     successes = request.form.get("successes", "")
-    return accuracy, distribution, probability, successes, trials
+    return dp, distribution, probability, successes, trials
+
+
+def _get_or_set_dp() -> int:
+    accuracy = request.form.get("accuracy", "4dp")
+    try:
+        dp = int(accuracy[0])
+    except ValueError:
+        dp = 4
+    return dp
 
 
 def _validate_binomial_form_data() -> (
@@ -192,7 +192,83 @@ def normal():
 
 @app.route("/normal-form", methods=["POST"])
 def normal_form():
-    return render_template("normal-form.html", title="Normal")
+    dp = _get_or_set_dp()
+    param_result = _get_normal_parameters()
+    if isinstance(param_result, Err):
+        return render_template("normal-error.html", error=param_result.err_value)
+    else:
+        assert isinstance(param_result, Ok)
+        operation, mu, sd, x1, x2, p = param_result.ok_value
+        op = processor.NORMAL_FUNCTIONS[operation]
+        return render_template("normal-form.html", title="Normal", dp=dp, op=op)
+
+
+def _get_normal_parameters() -> (
+    Result[
+        Tuple[str, float, float, Optional[float], Optional[float], Optional[float]],
+        str,
+    ]
+):
+    operation = request.form.get("operation", "")
+    if operation == "":
+        # this should not be possible
+        return Err("No operation selected!")
+    mean = request.form.get("mean", "")
+    if mean == "":
+        return Err("Please provide a numeric value for the mean, μ.")
+    standard_deviation = request.form.get("sd", "")
+    if standard_deviation == "":
+        return Err("Please provide a numeric value for " "the standard deviation, σ.")
+    try:
+        mu = float(mean)
+        sd = float(standard_deviation)
+    except ValueError:
+        return Err(
+            "Please provide numeric values only for the mean, μ "
+            "and standard deviation, σ."
+        )
+    x_upper = request.form.get("x_upper", "")
+    x_lower = request.form.get("x_lower", "")
+    prob = request.form.get("prob", "")
+    if operation not in ["ppf_left", "ppf_right"] and x_upper == "":
+        return Err("Please provide a numeric value for x1.")
+    if operation == "cdf_middle" and (x_upper == "" or x_lower) == "":
+        return Err("Please provide numeric values for x1 and x2.")
+    if operation in ["ppf_left", "ppf_right"] and prob == "":
+        return Err("Please provide a value for p. 0 <= p <= 1")
+    if x_upper != "":
+        try:
+            x1 = float(x_upper)
+        except ValueError:
+            return Err(
+                f"Please enter a numeric value for x1 with no other characters. "
+                f"You entered {x_upper}."
+            )
+    else:
+        x1 = None
+    if x_lower != "":
+        try:
+            x2 = float(x_lower)
+        except ValueError:
+            return Err(
+                f"Please enter a numeric value for x2 with no other characters. "
+                f"You entered {x_lower}."
+            )
+    else:
+        x2 = None
+    if prob != "":
+        try:
+            p = float(prob)
+        except ValueError:
+            return Err(
+                f"Please enter a numeric value for p with no other characters."
+                f"You entered {x_lower}."
+            )
+        if p < 0 or p > 1:
+            return Err(f"Probabilities must be: 0 <= p <= 1!. " f"You entered: {p}")
+    else:
+        p = None
+    return Ok((operation, mu, sd, x1, x2, p))
 
 
 if __name__ == "__main__":

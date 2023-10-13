@@ -3,7 +3,7 @@
 <div class="container p-5 mt-4 border border-dark">
     <h1>A level Statistics Calculator</h1>
     <h2>Normal Distributions</h2>
-    <h5>X ~ N(μ,σ²)</h5>
+    <h3>Given X ~ N(μ,σ²)</h3>
      <form class="row g-3" action="/normal-form" method="POST">
        <select class="form-select" aria-label="Default select example" name="accuracy">
             <option selected>Accuracy in Decimal Places (Optional)</option>
@@ -13,21 +13,35 @@
             <option value="5dp">5dp</option>
             <option value="6dp">6dp</option>
         </select>
-         <select class="form-select" aria-label="Default select example" name="accuracy">
-            <option selected value="norm">Normal Distribution (bcd)</option>
-            <option value="ncd">Normal Cumulative Distribution</option>
-        </select>
-        <div class="input-group mb-3">
+         <div class="input-group mb-3">
           <span class="input-group-text">μ</span>
-          <input type="text" class="form-control" placeholder="mean" name="mean">
+          <input type="text" class="form-control" placeholder="mean (Use . only for decimal point)" name="mean">
         </div>
         <div class="input-group mb-3">
           <span class="input-group-text">σ</span>
-          <input type="text" class="form-control" placeholder="standard, deviation" name="sd">
+          <input type="text" class="form-control" placeholder="standard deviation (Use . only for decimal point)" name="sd">
+        </div>
+         <div class="bg bg-light">
+             <p>Choose an operation (where ? indicates the value you are trying to find):</p>
+        </div>
+         <select class="form-select" aria-label="Default select example" name="operation">
+            <option selected value="cdf_left">1. P(X <= x1) = ? | Normal cdf left region</option>
+            <option value="cdf_right">2. P(X >= x1) = ? | Normal cdf right region</option>
+            <option value="cdf_middle">3. P(x2 <= X <= x1) = ? | Normal cdf middle region</option>
+            <option value="ppf_left">4. Find x if probability P(X <= ?) is known. Inverse cdf left region.</option>
+            <option value="ppf_right">5. Find x if probability P(X >= ?) is known. Inverse cdf right region.</option>
+        </select>
+        <div class="input-group mb-3">
+          <span class="input-group-text">x1</span>
+          <input type="text" class="form-control" placeholder="Required for option 1. 2. and 3." name="x_upper">
         </div>
         <div class="input-group mb-3">
-          <span class="input-group-text">x</span>
-          <input type="text" class="form-control" placeholder="P(X < x)" name="successes">
+          <span class="input-group-text">x2</span>
+          <input type="text" class="form-control" placeholder="Required for option 3." name="x_lower">
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">P(X <= x)</span>
+          <input type="text" class="form-control" placeholder="P(X <= ?) = p or (X >= ?) = p" name="prob">
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-dark mb-3">Submit</button>

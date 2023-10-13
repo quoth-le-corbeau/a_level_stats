@@ -1,8 +1,48 @@
+from scipy.stats import norm
 import numpy as np
 import math
 from typing import List, Tuple
 
 from models import CentralTendency, Spread
+
+
+def p_x_up_to_value(mean: float, sd: float, val: float) -> None:
+    p = norm(loc=mean, scale=sd).cdf(val)
+    print(f"P(x < {val}) = {round(p, 6)}")
+
+
+def p_x_above_value(mean: float, sd: float, val: float) -> None:
+    p = norm(loc=mean, scale=sd).cdf(val)
+    print(f"P(x >= {val}) = {round(1 - p, 6)}")
+
+
+def p_x_between_values(mean, sd, val1, val2) -> None:
+    p1 = norm(loc=mean, scale=sd).cdf(val1)
+    p2 = norm(loc=mean, scale=sd).cdf(val2)
+    print(f"ANSWER: P({val1} < x < {val2}) = {round(p2 - p1, 6)}")
+    print("BREAKDOWN:")
+    print(f"P(x < {val1}, P(x > {val2}) = {round(1 - p2, 6) + p1, 6}")
+    print(f"P(x < {val1}) = {p1}")
+    print(f"P(x < {val2}) = {p2}")
+
+
+def up_to_value_given_p(mean, sd, p) -> None:
+    less_than_value = norm.ppf(p, loc=mean, scale=sd)
+    print(f"If P(x <= X) = {round(p, 4)}, Then X = {round(less_than_value, 3)}")
+
+
+def above_value_given_p(mean, sd, p) -> None:
+    more_than_value = norm.ppf(1 - p, loc=mean, scale=sd)
+    print(f"If P(x >= X) = {round(p, 4)}, Then X = {round(more_than_value, 3)}")
+
+
+NORMAL_FUNCTIONS = {
+    "cdf_left": p_x_up_to_value,
+    "cdf_right": p_x_above_value,
+    "cdf_middle": p_x_between_values,
+    "ppf_left": up_to_value_given_p,
+    "ppf_right": above_value_given_p,
+}
 
 
 def get_central_tendency(data_list: List[float], dp: int = 2) -> CentralTendency:
