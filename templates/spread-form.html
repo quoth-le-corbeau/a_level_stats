@@ -6,6 +6,9 @@
     <p>Data: {{ data }}</p>
     <p>Mean: {{ measures.mean }}</p>
     <p>Standard Deviation: {{ measures.sd }}</p>
+    <p>Interquartile Range: {{ measures.iqr }}</p>
+    <p>Q1: {{ measures.q1 }}</p>
+    <p>Q3: {{ measures.q3 }}</p>
     <p>Results accurate to {{ dp }} decimal places</p>
     <div>
         <a href="{{ url_for('spread')}}" class="btn btn-outline-dark">Calculate more Spreads</a>

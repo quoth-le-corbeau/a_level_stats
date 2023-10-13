@@ -19,4 +19,4 @@ class Spread:
 
     @property
     def iqr(self):
-        return self.q3 - self.q1
+        return round((self.q3 - self.q1), 4)
