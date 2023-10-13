@@ -2,7 +2,11 @@
 {% block content %}
 <div class="container p-5 mt-4 border border-danger bg-danger-subtle">
     <h2 class="text-danger">Oh no!</h2>
-    <p>You submitted <b>{{ data }}</b></p>
+    {% if data == "" %}
+        <p>You submitted <b>Empty Data!</b></p>
+    {% else %}
+        <p>You submitted <b>{{ data }}</b></p>
+    {% endif %}
     <p>{{ error }}</p>
     <div>
         <a href="{{ url_for('mean')}}" class="btn btn-outline-dark">Try Again</a>

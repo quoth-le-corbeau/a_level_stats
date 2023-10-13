@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container p-5 mt-4 border border-dark">
+    <h1>A level Statistics Calculator</h1>
+    <h2>Normal Distributions</h2>
+    <p>Results accurate to {{ dp }} decimal places</p>
+    <div>
+        <a href="{{ url_for('normal')}}" class="btn btn-outline-dark">Calculate more Normal Distributions</a>
+    </div>
+</div>
+{% endblock %}

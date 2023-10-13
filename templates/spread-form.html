@@ -1,8 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container p-5 mt-4 border border-dark">
+    <h1>A level Statistics Calculator</h1>
+    <h2>Measures of Spread</h2>
     <p>Data: {{ data }}</p>
     <p>Mean: {{ measures.mean }}</p>
     <p>Standard Deviation: {{ measures.sd }}</p>
+    <p>Results accurate to {{ dp }} decimal places</p>
+    <div>
+        <a href="{{ url_for('spread')}}" class="btn btn-outline-dark">Calculate more Spreads</a>
+    </div>
 </div>
 {% endblock %}

@@ -28,6 +28,7 @@ def mean_form():
         measures=measures,
         data=data_list,
         sorted_data=sorted(data_list),
+        dp=dp,
     )
 
 
@@ -66,7 +67,12 @@ def spread_form():
     if error is not None:
         return render_template("spread-error.html", data=error[0], error=error[1])
     measures = processor.get_spread(data_list=data_list, dp=dp)
-    return render_template("spread-form.html", measures=measures, data=data_list)
+    return render_template(
+        "spread-form.html",
+        measures=measures,
+        data=data_list,
+        dp=dp,
+    )
 
 
 @app.route("/binomial")
@@ -106,6 +112,7 @@ def binomial_form():
             successes=str(successes),
             rows=rows,
             p_x_is_x=p_x,
+            dp=accuracy,
         )
     except ValueError:
         error = (
@@ -131,7 +138,10 @@ def _get_binomial_form_submission() -> Tuple[int, str, str, str, str]:
 
 
 def _validate_binomial_form_data() -> (
-    Union[Tuple[int, str, float, int, int, Optional[str]], Tuple[None, str]]
+    Union[
+        Tuple[int, str, float, int, int, Optional[str]],
+        Tuple[None, None, None, None, None, str],
+    ]
 ):
     (
         accuracy,
@@ -152,7 +162,7 @@ def _validate_binomial_form_data() -> (
             f"Invalid values for n, p or x. "
             f"You entered n = {trials}, p = {probability}, x = {successes}"
         )
-        return None, error
+        return None, None, None, None, None, error
     try:
         if float(probability) < 0 or float(probability) > 1:
             error = (
@@ -172,7 +182,7 @@ def _validate_binomial_form_data() -> (
             f"Invalid values for n, p or x. "
             f"You entered n = {trials}, p = {probability}, x = {successes}"
         )
-        return None, error
+        return None, None, None, None, None, error
 
 
 @app.route("/normal")

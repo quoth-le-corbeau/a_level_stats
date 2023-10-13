@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container p-5 mt-4 border border-dark">
+    <h1>A level Statistics Calculator</h1>
+    <h2>Mean Median Mode Range</h2>
     <h5>Your Data: {{ data }}</h5>
     <h5>Sorted: {{ sorted_data }}</h5>
     <h6>Mean: {{ measures.mean }}</h6>
     <h6>Median: {{ measures.median }}</h6>
     <h6>Range: {{ measures.range }}</h6>
-    {% if measures.mode is not None %}
+    {% if measures.mode != "" %}
         <h6>Mode: {{ measures.mode }}</h6>
     {% else %}
         <h6>Mode: This data has no mode</h6>
+    {% endif %}
+    <p>Results accurate to {{ dp }} decimal places</p>
+     <div>
+        <a href="{{ url_for('mean')}}" class="btn btn-outline-dark">Calculate more Measures of Central Tendency</a>
+    </div>
 </div>
 {% endblock %}

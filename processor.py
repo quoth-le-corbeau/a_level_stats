@@ -18,23 +18,30 @@ def get_central_tendency(data_list: List[float], dp: int = 2) -> CentralTendency
     else:
         median = sorted_data[math.floor(n / 2)]
     counter = 0
+    freq = 1
     point = sorted_data[0]
     for num in sorted_data:
         freq = sorted_data.count(num)
         if freq > counter:
             counter = freq
             point = num
-    mode = round(number=point, ndigits=dp)
-    return CentralTendency(mean=mean, median=median, mode=mode, range=rng)
+    if freq == 1:
+        mode_str: str = ""
+        return CentralTendency(mean=mean, median=median, mode=mode_str, range=rng)
+    else:
+        mode: float = round(number=point, ndigits=dp)
+        return CentralTendency(mean=mean, median=median, mode=mode, range=rng)
 
 
-def get_spread(data_list: List[float], dp: int = 2) -> Spread:
+def get_spread(data_list: List[float], dp: int) -> Spread:
     sorted_data = sorted(data_list)
     sum_n: float = sum(sorted_data)
     n: int = len(sorted_data)
     mean = round(number=sum_n / n, ndigits=dp)
-    np.std(data_list)
-    return Spread(mean=mean, sd=3)
+    sd = round(float(np.std(data_list)), dp)
+    q1 = sorted_data[math.ceil(n / 4) - 1]
+    q3 = sorted_data[math.ceil((3 * n + 1) / 4) - 1]
+    return Spread(mean=mean, sd=sd, q1=q1, q3=q3)
 
 
 def get_bcd(n: int, p: float, x: int, dp: int) -> Tuple[List[str], float]:
