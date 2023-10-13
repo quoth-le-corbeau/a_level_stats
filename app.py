@@ -190,5 +190,10 @@ def normal():
     return render_template("normal.html", title="Normal")
 
 
+@app.route("/normal-form", methods=["POST"])
+def normal_form():
+    return render_template("normal-form.html", title="Normal")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
