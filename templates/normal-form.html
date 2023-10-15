@@ -3,13 +3,23 @@
 <div class="container p-5 mt-4 border border-dark">
     <h1>A level Statistics Calculator</h1>
     <h2>Normal Distributions</h2>
-    <h4>Your distribution: <b>X ~ ({{ mu }}, {{sigma}}²)</b></h4>
+    <h4>Your distribution: <b>X ~ N({{ mu }}, {{sigma}}²)</b></h4>
     <p>Operation selected: {{ operation }}</p>
     {% if operation == "cdf_left" %}
-        <h5><span class="bg bg-success-subtle"><b><u>P(X < {{ x1 }}) = {{ answer }}</u></b></span></h5>
+        <h5><span class="bg bg-success-subtle"><b><u>P(X <= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+    {% elif operation == "cdf_right" %}
+        <h5><span class="bg bg-success-subtle"><b><u>P(X >= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+    {% elif operation == "cdf_middle" %}
+        <h5><span class="bg bg-success-subtle"><b><u>P({{ x2 }} <= X <= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+    {% elif operation == "cdf_outside" %}
+        <h5><span class="bg bg-success-subtle"><b><u>P(X <= {{ x2 }}, X >= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+    {% elif operation == "ppf_left" %}
+        <h5><span class="bg bg-success-subtle"><b><u>P(X <= {{ answer }}) = {{ p }}</u></b></span></h5>
+    {% elif operation == "ppf_right" %}
+        <h5><span class="bg bg-success-subtle"><b><u>P(X >= {{ answer }}) = {{ p }}</u></b></span></h5>
     {% endif %}
     <h5><span class="bg bg-success-subtle">Answer: <b><u>{{ answer }}</u></b></span></h5>
-    <p>Results accurate to {{ dp }} decimal places</p>
+    <p>Accurate to {{ dp }} decimal places</p>
     <div>
         <a href="{{ url_for('normal')}}" class="btn btn-outline-dark">
             Calculate more Normal Distributions

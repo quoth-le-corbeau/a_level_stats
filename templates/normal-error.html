@@ -5,19 +5,19 @@
     <h4>{{ error.message }}</h4>
     <p>You chose operation: <b>{{ error.operation }}</b></p>
     {% if error.mean is not none %}
-        <p>You submitted: μ={{ error.mean }}</p>
+        <p>You submitted: <b>μ={{ error.mean }}</b></p>
     {% endif %}
     {% if error.standard_deviation is not none %}
-        <p>You submitted: σ={{ error.standard_deviation }}</p>
+        <p>You submitted: <b>σ={{ error.standard_deviation }}</b></p>
     {% endif %}
     {% if error.x1 is not none %}
-        <p>You submitted: x1={{ error.x1 }}</p>
+        <p>You submitted: <b>x1={{ error.x1 }}</b></p>
     {% endif %}
     {% if error.x2 is not none %}
-        <p>You submitted: x2={{ error.x2 }}</p>
+        <p>You submitted: <b>x2={{ error.x2 }}</b></p>
     {% endif %}
     {% if error.p is not none %}
-        <p>You submitted: p={{ error.p }}</p>
+        <p>You submitted: <b>p={{ error.p }}</b></p>
     {% endif %}
     <div class="text-center">
         <a href="{{ url_for('normal')}}" class="btn btn-outline-dark">Try Again</a>

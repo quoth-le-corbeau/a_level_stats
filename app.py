@@ -295,7 +295,7 @@ def _get_normal_parameters() -> Result[models.NormalParams, models.NormalError]:
                 message="Please provide a numeric value for x1.",
             )
         )
-    if operation == "cdf_middle" and (x_upper == "" or x_lower) == "":
+    if operation in ["cdf_middle", "cdf_outside"] and (x_upper == "" or x_lower) == "":
         return Err(
             models.NormalError(
                 operation=operation,
