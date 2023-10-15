@@ -1,45 +1,66 @@
-from scipy.stats import norm
+from result import Result, Ok, Err
+from scipy.stats import norm  # type: ignore
 import numpy as np
 import math
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Callable
 
+import models
 from models import CentralTendency, Spread
 
 
-def p_x_up_to_value(mean: float, sd: float, val: float) -> None:
-    p = norm(loc=mean, scale=sd).cdf(val)
-    print(f"P(x < {val}) = {round(p, 6)}")
+def p_x_up_to_value(params: models.NormalParams) -> Result[float, str]:
+    try:
+        return Ok(norm(loc=params.mu, scale=params.sigma).cdf(params.x1))
+    except ValueError:
+        return Err("Oh dear. An unexpected error occurred.")
 
 
-def p_x_above_value(mean: float, sd: float, val: float) -> None:
-    p = norm(loc=mean, scale=sd).cdf(val)
-    print(f"P(x >= {val}) = {round(1 - p, 6)}")
+def p_x_above_value(params: models.NormalParams) -> Result[float, str]:
+    try:
+        return Ok(1 - norm(loc=params.mu, scale=params.sigma).cdf(params.x1))
+    except ValueError:
+        return Err("Oh dear. An unexpected error occurred.")
 
 
-def p_x_between_values(mean, sd, val1, val2) -> None:
-    p1 = norm(loc=mean, scale=sd).cdf(val1)
-    p2 = norm(loc=mean, scale=sd).cdf(val2)
-    print(f"ANSWER: P({val1} < x < {val2}) = {round(p2 - p1, 6)}")
-    print("BREAKDOWN:")
-    print(f"P(x < {val1}, P(x > {val2}) = {round(1 - p2, 6) + p1, 6}")
-    print(f"P(x < {val1}) = {p1}")
-    print(f"P(x < {val2}) = {p2}")
+def p_x_between_values(params: models.NormalParams) -> Result[float, str]:
+    try:
+        p1 = norm(loc=params.mu, scale=params.sigma).cdf(params.x1)
+        p2 = norm(loc=params.mu, scale=params.sigma).cdf(params.x2)
+        return Ok(p2 - p1)
+    except ValueError:
+        return Err("Oh dear. An unexpected error occurred.")
 
 
-def up_to_value_given_p(mean, sd, p) -> None:
-    less_than_value = norm.ppf(p, loc=mean, scale=sd)
-    print(f"If P(x <= X) = {round(p, 4)}, Then X = {round(less_than_value, 3)}")
+def p_x_outside_values(params: models.NormalParams) -> Result[float, str]:
+    try:
+        p1 = norm(loc=params.mu, scale=params.sigma).cdf(params.x1)
+        p2 = norm(loc=params.mu, scale=params.sigma).cdf(params.x2)
+        return Ok(1 - p2 + p1)
+    except ValueError:
+        return Err("Oh dear. An unexpected error occurred.")
 
 
-def above_value_given_p(mean, sd, p) -> None:
-    more_than_value = norm.ppf(1 - p, loc=mean, scale=sd)
-    print(f"If P(x >= X) = {round(p, 4)}, Then X = {round(more_than_value, 3)}")
+def up_to_value_given_p(params: models.NormalParams) -> Result[float, str]:
+    try:
+        return Ok(norm.ppf(params.p, loc=params.mu, scale=params.sigma))
+    except ValueError:
+        return Err("Oh dear. An unexpected error occurred.")
 
 
-NORMAL_FUNCTIONS = {
+def above_value_given_p(params: models.NormalParams) -> Result[float, str]:
+    if params.p is None:
+        return Err("Oh dear. An unexpected error occurred.")
+    try:
+        return Ok(norm.ppf(1 - params.p, loc=params.mu, scale=params.sigma))
+    except ValueError:
+        return Err("Oh dear. An unexpected error occurred.")
+
+
+NORMAL_FUNCTIONS: Dict[str, Callable[[models.NormalParams], Result[float, str]]] = {
     "cdf_left": p_x_up_to_value,
     "cdf_right": p_x_above_value,
     "cdf_middle": p_x_between_values,
+    "cdf_outside": p_x_outside_values,
     "ppf_left": up_to_value_given_p,
     "ppf_right": above_value_given_p,
 }

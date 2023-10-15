@@ -3,10 +3,17 @@
 <div class="container p-5 mt-4 border border-dark">
     <h1>A level Statistics Calculator</h1>
     <h2>Normal Distributions</h2>
+    <h4>Your distribution: <b>X ~ ({{ mu }}, {{sigma}}²)</b></h4>
+    <p>Operation selected: {{ operation }}</p>
+    {% if operation == "cdf_left" %}
+        <h5><span class="bg bg-success-subtle"><b><u>P(X < {{ x1 }}) = {{ answer }}</u></b></span></h5>
+    {% endif %}
+    <h5><span class="bg bg-success-subtle">Answer: <b><u>{{ answer }}</u></b></span></h5>
     <p>Results accurate to {{ dp }} decimal places</p>
-    <p>Operation selected: {{ op }}</p>
     <div>
-        <a href="{{ url_for('normal')}}" class="btn btn-outline-dark">Calculate more Normal Distributions</a>
+        <a href="{{ url_for('normal')}}" class="btn btn-outline-dark">
+            Calculate more Normal Distributions
+        </a>
     </div>
 </div>
 {% endblock %}

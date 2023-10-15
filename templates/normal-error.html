@@ -2,8 +2,23 @@
 {% block content %}
 <div class="container p-5 mt-4 border border-danger bg-danger-subtle">
     <h2 class="text-danger">Oh no!</h2>
-    <p>You submitted <b>{{ data }}</b></p>
-    <p>{{ error }}</p>
+    <h4>{{ error.message }}</h4>
+    <p>You chose operation: <b>{{ error.operation }}</b></p>
+    {% if error.mean is not none %}
+        <p>You submitted: μ={{ error.mean }}</p>
+    {% endif %}
+    {% if error.standard_deviation is not none %}
+        <p>You submitted: σ={{ error.standard_deviation }}</p>
+    {% endif %}
+    {% if error.x1 is not none %}
+        <p>You submitted: x1={{ error.x1 }}</p>
+    {% endif %}
+    {% if error.x2 is not none %}
+        <p>You submitted: x2={{ error.x2 }}</p>
+    {% endif %}
+    {% if error.p is not none %}
+        <p>You submitted: p={{ error.p }}</p>
+    {% endif %}
     <div class="text-center">
         <a href="{{ url_for('normal')}}" class="btn btn-outline-dark">Try Again</a>
     </div>

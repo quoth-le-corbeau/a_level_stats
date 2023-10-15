@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
 from typing import Tuple, List, Optional, Union
 from result import Result, Ok, Err
-import processor
+import data_processor
+import models
 
 app = Flask(__name__)
 
@@ -22,7 +23,7 @@ def mean_form():
     data_list, dp, error = _discreet_data_from_form()
     if error is not None:
         return render_template("mean-error.html", data=error[0], error=error[1])
-    measures = processor.get_central_tendency(data_list=data_list, dp=dp)
+    measures = data_processor.get_central_tendency(data_list=data_list, dp=dp)
     return render_template(
         "mean-form.html",
         measures=measures,
@@ -61,7 +62,7 @@ def spread_form():
     data_list, dp, error = _discreet_data_from_form()
     if error is not None:
         return render_template("spread-error.html", data=error[0], error=error[1])
-    measures = processor.get_spread(data_list=data_list, dp=dp)
+    measures = data_processor.get_spread(data_list=data_list, dp=dp)
     return render_template(
         "spread-form.html",
         measures=measures,
@@ -89,11 +90,11 @@ def binomial_form():
         return render_template("binomial-error.html", error=error)
     try:
         if "bcd" in distribution:
-            rows, p_x = processor.get_bcd(
+            rows, p_x = data_processor.get_bcd(
                 n=trials, p=probability, x=successes, dp=accuracy
             )
         elif "bpd" in distribution:
-            rows, p_x = processor.get_bpd(
+            rows, p_x = data_processor.get_bpd(
                 n=trials, p=probability, x=successes, dp=accuracy
             )
         else:
@@ -198,51 +199,141 @@ def normal_form():
         return render_template("normal-error.html", error=param_result.err_value)
     else:
         assert isinstance(param_result, Ok)
-        operation, mu, sd, x1, x2, p = param_result.ok_value
-        op = processor.NORMAL_FUNCTIONS[operation]
-        return render_template("normal-form.html", title="Normal", dp=dp, op=op)
+        normal_params = param_result.ok_value
+        func = data_processor.NORMAL_FUNCTIONS[normal_params.operation]
+        normal_result = func(normal_params)
+        if isinstance(normal_result, Err):
+            return render_template(
+                "unexpected-error.html", error=normal_result.err_value
+            )
+        else:
+            assert isinstance(normal_result, Ok)
+            return render_template(
+                "normal-form.html",
+                title="Normal",
+                dp=dp,
+                mu=normal_params.mu,
+                sigma=normal_params.sigma,
+                x1=normal_params.x1,
+                x2=normal_params.x2,
+                p=normal_params.p,
+                operation=normal_params.operation,
+                answer=round(normal_result.ok_value, dp),
+            )
 
 
-def _get_normal_parameters() -> (
-    Result[
-        Tuple[str, float, float, Optional[float], Optional[float], Optional[float]],
-        str,
-    ]
-):
+def _get_normal_parameters() -> Result[models.NormalParams, models.NormalError]:
     operation = request.form.get("operation", "")
     if operation == "":
         # this should not be possible
-        return Err("No operation selected!")
+        return Err(
+            models.NormalError(
+                operation=operation,
+                mean=None,
+                standard_deviation=None,
+                x1=None,
+                x2=None,
+                p=None,
+                message="No operation selected!",
+            )
+        )
     mean = request.form.get("mean", "")
     if mean == "":
-        return Err("Please provide a numeric value for the mean, μ.")
+        return Err(
+            models.NormalError(
+                operation=operation,
+                mean="empty",
+                standard_deviation=None,
+                x1=None,
+                x2=None,
+                p=None,
+                message="Please provide a numeric value for the mean, μ.",
+            )
+        )
     standard_deviation = request.form.get("sd", "")
     if standard_deviation == "":
-        return Err("Please provide a numeric value for " "the standard deviation, σ.")
+        return Err(
+            models.NormalError(
+                operation=None,
+                mean=None,
+                standard_deviation="empty",
+                x1=None,
+                x2=None,
+                p=None,
+                message="Please provide a numeric value "
+                "for the standard deviation, σ.",
+            )
+        )
     try:
         mu = float(mean)
         sd = float(standard_deviation)
     except ValueError:
         return Err(
-            "Please provide numeric values only for the mean, μ "
-            "and standard deviation, σ."
+            models.NormalError(
+                operation=operation,
+                mean=mean,
+                standard_deviation=standard_deviation,
+                x1=None,
+                x2=None,
+                p=None,
+                message="Please provide numeric values only for the mean, μ "
+                "and standard deviation, σ.",
+            )
         )
     x_upper = request.form.get("x_upper", "")
     x_lower = request.form.get("x_lower", "")
     prob = request.form.get("prob", "")
     if operation not in ["ppf_left", "ppf_right"] and x_upper == "":
-        return Err("Please provide a numeric value for x1.")
+        return Err(
+            models.NormalError(
+                operation=operation,
+                mean=mean,
+                standard_deviation=standard_deviation,
+                x1="empty",
+                x2=None,
+                p=None,
+                message="Please provide a numeric value for x1.",
+            )
+        )
     if operation == "cdf_middle" and (x_upper == "" or x_lower) == "":
-        return Err("Please provide numeric values for x1 and x2.")
+        return Err(
+            models.NormalError(
+                operation=operation,
+                mean=mean,
+                standard_deviation=standard_deviation,
+                x1=x_upper,
+                x2=x_lower,
+                p=None,
+                message="Please provide numeric values for x1 and x2.",
+            )
+        )
     if operation in ["ppf_left", "ppf_right"] and prob == "":
-        return Err("Please provide a value for p. 0 <= p <= 1")
+        return Err(
+            models.NormalError(
+                operation=operation,
+                mean=mean,
+                standard_deviation=standard_deviation,
+                x1=None,
+                x2=None,
+                p="empty",
+                message="Please provide a value for p. 0 <= p <= 1",
+            )
+        )
     if x_upper != "":
         try:
             x1 = float(x_upper)
         except ValueError:
             return Err(
-                f"Please enter a numeric value for x1 with no other characters. "
-                f"You entered {x_upper}."
+                models.NormalError(
+                    operation=operation,
+                    mean=mean,
+                    standard_deviation=standard_deviation,
+                    x1=x_upper,
+                    x2=None,
+                    p=None,
+                    message="Please enter a numeric value for x1 "
+                    "with no other characters.",
+                )
             )
     else:
         x1 = None
@@ -251,24 +342,71 @@ def _get_normal_parameters() -> (
             x2 = float(x_lower)
         except ValueError:
             return Err(
-                f"Please enter a numeric value for x2 with no other characters. "
-                f"You entered {x_lower}."
+                models.NormalError(
+                    operation=None,
+                    mean=mean,
+                    standard_deviation=standard_deviation,
+                    x1=None,
+                    x2=None,
+                    p=None,
+                    message="Please enter a numeric value for x2 "
+                    "with no other characters.",
+                )
             )
     else:
         x2 = None
+    if x1 is not None and x2 is not None and not x2 < x1:
+        return Err(
+            models.NormalError(
+                operation=None,
+                mean=mean,
+                standard_deviation=standard_deviation,
+                x1=x_upper,
+                x2=x_lower,
+                p=None,
+                message="Please make sure x2 < x1.",
+            )
+        )
     if prob != "":
         try:
             p = float(prob)
         except ValueError:
             return Err(
-                f"Please enter a numeric value for p with no other characters."
-                f"You entered {x_lower}."
+                models.NormalError(
+                    operation=None,
+                    mean=mean,
+                    standard_deviation=standard_deviation,
+                    x1=None,
+                    x2=None,
+                    p=p,
+                    message="Please enter a numeric value for p "
+                    "with no other characters.",
+                )
             )
         if p < 0 or p > 1:
-            return Err(f"Probabilities must be: 0 <= p <= 1!. " f"You entered: {p}")
+            return Err(
+                models.NormalError(
+                    operation=None,
+                    mean=mean,
+                    standard_deviation=standard_deviation,
+                    x1=None,
+                    x2=None,
+                    p=p,
+                    message="Probabilities must be: 0 <= p <= 1!",
+                )
+            )
     else:
         p = None
-    return Ok((operation, mu, sd, x1, x2, p))
+    return Ok(
+        models.NormalParams(
+            operation=operation,
+            mu=mu,
+            sigma=sd,
+            x1=x1,
+            x2=x2,
+            p=p,
+        )
+    )
 
 
 if __name__ == "__main__":
