@@ -3,15 +3,15 @@
 <div class="container p-5 mt-4 border border-dark">
     <h1>A level Statistics Calculator</h1>
     <h2>Binomial Distributions</h2>
-    <h5>{{ distribution }} with X ~ ({{ trials + "," + probability }}):</h5>
+    <h5>{{ distribution }} with X ~ B({{ trials + "," + probability }}):</h5>
     {% for row in rows %}
-        <p>{{ row }}</p>
+    <p>{{ row }}</p>
     {% endfor %}
     {% if distribution == "bcd" %}
-        <h5>P(X <= {{ successes }}) = <u>{{ p_x_is_x }})</u></h5>
-        <h5>P(X >= {{ successes }}) = <u>{{ 1 - p_x_is_x }})</u></h5>
+    <h5>P(X <= {{ successes }})=<u>{{ p_x_is_x }})</u></h5>
+    <h5>P(X >= {{ successes }}) = <u>{{ 1 - p_x_is_x }})</u></h5>
     {% else %}
-        <h5>P(X = {{ successes }}) = <u>{{ p_x_is_x }})</u></h5>
+    <h5>P(X = {{ successes }}) = <u>{{ p_x_is_x }})</u></h5>
     {% endif %}
     <p>Results accurate to {{ dp }} decimal places</p>
     <div>
