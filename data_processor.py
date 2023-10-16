@@ -79,14 +79,13 @@ def get_central_tendency(data_list: List[float], dp: int = 2) -> CentralTendency
     else:
         median = sorted_data[math.floor(n / 2)]
     counter = 0
-    freq = 1
     point = sorted_data[0]
     for num in sorted_data:
         freq = sorted_data.count(num)
         if freq > counter:
             counter = freq
             point = num
-    if freq == 1:
+    if counter <= 1:
         mode_str: str = ""
         return CentralTendency(mean=mean, median=median, mode=mode_str, range=rng)
     else:

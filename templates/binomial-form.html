@@ -3,6 +3,7 @@
 <div class="container p-5 mt-4 border border-dark">
     <h1>A level Statistics Calculator</h1>
     <h2>Binomial Distributions</h2>
+    <div class="bg bg-primary-subtle p-2 w-50">
     <h5>{{ distribution }} with X ~ B({{ trials + "," + probability }}):</h5>
     {% for row in rows %}
     <p>{{ row }}</p>
@@ -13,6 +14,7 @@
     {% else %}
     <h5>P(X = {{ successes }}) = <u>{{ p_x_is_x }})</u></h5>
     {% endif %}
+    </div>
     <p>Results accurate to {{ dp }} decimal places</p>
     <div>
         <a href="{{ url_for('binomial')}}" class="btn btn-outline-dark">Calculate more Binomial Distributions</a>

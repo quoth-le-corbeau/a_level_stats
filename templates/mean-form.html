@@ -5,14 +5,16 @@
     <h2>Mean Median Mode Range</h2>
     <h5>Your Data: {{ data }}</h5>
     <h5>Sorted: {{ sorted_data }}</h5>
-    <h6>Mean: {{ measures.mean }}</h6>
-    <h6>Median: {{ measures.median }}</h6>
-    <h6>Range: {{ measures.range }}</h6>
-    {% if measures.mode != "" %}
-        <h6>Mode: {{ measures.mode }}</h6>
-    {% else %}
-        <h6>Mode: This data has no mode</h6>
-    {% endif %}
+    <div class="bg bg-secondary-subtle p-2 w-50">
+        <h6>Mean: <b>{{ measures.mean }}</b></h6>
+        <h6>Median: <b>{{ measures.median }}</b></h6>
+        <h6>Range: <b>{{ measures.range }}</b></h6>
+        {% if measures.mode != "" %}
+            <h6>Mode: <b>{{ measures.mode }}</b></h6>
+        {% else %}
+            <h6>Mode: <b>This data has no mode</b></h6>
+        {% endif %}
+    </div>
     <p>Results accurate to {{ dp }} decimal places</p>
      <div>
         <a href="{{ url_for('mean')}}" class="btn btn-outline-dark">Calculate more Measures of Central Tendency</a>

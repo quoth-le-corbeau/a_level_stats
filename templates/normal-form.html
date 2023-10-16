@@ -6,17 +6,17 @@
     <h4>Your distribution: <b>X ~ N({{ mu }}, {{sigma}}²)</b></h4>
     <p>Operation selected: {{ operation }}</p>
     {% if operation == "cdf_left" %}
-        <h5><span class="bg bg-success-subtle"><b><u>P(X <= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+        <h5><span class="bg bg-info-subtle p-2 w-50"><b><u>P(X <= {{ x1 }}) = {{ answer }}</u></b></span></h5>
     {% elif operation == "cdf_right" %}
-        <h5><span class="bg bg-success-subtle"><b><u>P(X >= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+        <h5><span class="bg bg-info-subtle p-2 w-50"><b><u>P(X >= {{ x1 }}) = {{ answer }}</u></b></span></h5>
     {% elif operation == "cdf_middle" %}
-        <h5><span class="bg bg-success-subtle"><b><u>P({{ x2 }} <= X <= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+        <h5><span class="bg bg-info-subtle p-2 w-50"><b><u>P({{ x2 }} <= X <= {{ x1 }}) = {{ answer }}</u></b></span></h5>
     {% elif operation == "cdf_outside" %}
-        <h5><span class="bg bg-success-subtle"><b><u>P(X <= {{ x2 }}, X >= {{ x1 }}) = {{ answer }}</u></b></span></h5>
+        <h5><span class="bg bg-info-subtle p-2 w-50"><b><u>P(X <= {{ x2 }}, X >= {{ x1 }}) = {{ answer }}</u></b></span></h5>
     {% elif operation == "ppf_left" %}
-        <h5><span class="bg bg-success-subtle"><b><u>P(X <= {{ answer }}) = {{ p }}</u></b></span></h5>
+        <h5><span class="bg bg-info-subtle p-2 w-50"><b><u>P(X <= {{ answer }}) = {{ p }}</u></b></span></h5>
     {% elif operation == "ppf_right" %}
-        <h5><span class="bg bg-success-subtle"><b><u>P(X >= {{ answer }}) = {{ p }}</u></b></span></h5>
+        <h5><span class="bg bg-info-subtle p-2 w-50"><b><u>P(X >= {{ answer }}) = {{ p }}</u></b></span></h5>
     {% endif %}
     <h5><span class="bg bg-success-subtle">Answer: <b><u>{{ answer }}</u></b></span></h5>
     <p>Accurate to {{ dp }} decimal places</p>
