@@ -101,7 +101,14 @@ def get_spread(data_list: List[float], dp: int) -> Spread:
     sd = round(float(np.std(data_list)), dp)
     q1 = sorted_data[math.ceil(n / 4) - 1]
     q3 = sorted_data[math.ceil((3 * n + 1) / 4) - 1]
-    return Spread(mean=mean, sd=sd, q1=q1, q3=q3)
+    iqr = round((q3 - q1), ndigits=dp)
+    outliers = []
+    lower_fence = q1 - round((1.5 * iqr), ndigits=dp)
+    upper_fence = q3 + round((1.5 * iqr), ndigits=dp)
+    for val in sorted_data:
+        if val > upper_fence or val < lower_fence:
+            outliers.append(val)
+    return Spread(mean=mean, sd=sd, q1=q1, q3=q3, iqr=iqr, outliers=outliers)
 
 
 def get_bcd(n: int, p: float, x: int, dp: int) -> Tuple[List[str], float]:

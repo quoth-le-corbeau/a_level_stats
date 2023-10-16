@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 
 @dataclass(frozen=True)
@@ -16,10 +16,8 @@ class Spread:
     sd: float
     q1: float
     q3: float
-
-    @property
-    def iqr(self):
-        return round((self.q3 - self.q1), 4)
+    iqr: float
+    outliers: List[float]
 
 
 @dataclass(frozen=True)

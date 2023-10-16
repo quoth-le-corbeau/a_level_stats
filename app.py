@@ -63,9 +63,15 @@ def spread_form():
     if error is not None:
         return render_template("spread-error.html", data=error[0], error=error[1])
     measures = data_processor.get_spread(data_list=data_list, dp=dp)
+    outliers_str = (
+        ", ".join(tuple(map(lambda x: str(x), measures.outliers)))
+        if len(measures.outliers) > 0
+        else None
+    )
     return render_template(
         "spread-form.html",
         measures=measures,
+        outliers=outliers_str,
         data=data_list,
         dp=dp,
     )

@@ -10,6 +10,11 @@
         <p>Interquartile Range: <b>{{ measures.iqr }}</b></p>
         <p>Q1: <b>{{ measures.q1 }}</b></p>
         <p>Q3: <b>{{ measures.q3 }}</b></p>
+        {% if outliers is not none %}
+            <p>Outliers: <b>{{ measures.outliers }}</b></p>
+        {% else %}
+            <p><b>This data has no outliers.</b></p>
+        {% endif %}
     </div>
     <p>Results accurate to {{ dp }} decimal places</p>
     <div>
